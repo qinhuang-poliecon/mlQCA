@@ -1,0 +1,154 @@
+---
+title: "mlQCA"
+output: 
+  rmarkdown::html_vignette
+vignette: >
+  %\VignetteIndexEntry{mlQCA}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+```{r, include = FALSE}
+knitr::opts_chunk$set(
+  collapse = TRUE,
+  comment = "#>"
+)
+```
+
+```{r setup, message=FALSE}
+library(mlQCA)
+```
+
+## 1. Overall Workflow
+
+The overall workflow of the package is intentionally straight-forward (we assume you have pre-processed your data but have not calibrated it yet):\
+1. **Build an xgboost model** (classification based on your outcome label)\
+2. **Estimate feature importance** (based on the xgboost model)\
+3. **Extract cutoffs** (used by the xgboost model)\
+4. **Calibrate data** (with the cutoffs)\
+5. **Estimate QCA metrics** (using the calibrated data)\
+6. **Form feature-ranking table** (by tallying feature importance and necessity metrics)\
+7. **Iterative QCA** (by choosing k features from a given n feature vector)
+
+```{r basic workflow, eval=F}
+## 1. Build an xgboost model
+xgb <- buildXGboost(voteData, "vote")
+
+## 2. estimate feature importance
+fMetricModel <- getFeatureImp(xgb, voteData, "vote")
+
+## 3. Extract cutoffs
+cutDf <- getXGboostCut(xgb, full = F)
+
+## 4. Calibrate data
+voteDataCalibrated <- reCalibrateXGCut(data = voteData, cutoffs = cutDf, outcome = "vote", na.rm = F)
+
+## 5. Estimate QCA metrics
+fMetricQCA <- getQCAMetric(voteDataCalibrated, "vote")
+
+## 6. Form feature-ranking table
+fRankTable <- joinMetrics(fMetricModel, fMetricQCA)
+
+## 7. Iterative QCA
+selectFeatures <- head(fMetricModel$feature, 10)
+Res <- iterQCA(features = selectFeatures, k=4, dataCali = voteDataCalibrated, outcome = "vote", incl.cut = 0.8)
+```
+
+## 2. Detailed Steps
+
+### 2.1 Build an xgboost model
+
+We assume you have pre-processed your data (including data cleaning, renaming, filtering etc.), and we start by building an xgboost model. Specifically, we build a tree ensemble classification model to classify each observation into one of your outcome category.
+
+In our example data `voteData`, our outcome label is `"vote"`, indicating whether the interviewee voted or not. Each row is a interviewee, and the features are various aspects about the interviewee (e.g. education level, parent education level, etc.). Refer to the `codebook` for the feature names.
+
+```{r outcome count}
+dim(voteData) # 427 interviewees; 77 features, including "vote"
+table(voteData$vote) # 319 voted; 108 did not vote;
+```
+
+We then build an xgboost model to predict the `"vote"` outcome. Under the hood, we built the model using the `caret` and `xgboost` packages. To see details of the default parameters used, call `?buildXGboost`.
+
+```{r build xgboost, message=FALSE, warning=FALSE, results=FALSE}
+## this can take a few minutes
+set.seed(201) ## ensure reproducibility
+xgb <- buildXGboost(voteData, "vote")
+```
+
+We can estimate the accuracy of the model to get an idea of how well it differentiates the voters and the non-voters.Note that our goal here is not to predict new data, but rather to understand the data at hand. The accuracy, even modest as a general classification model, may be good enough to show some success in using the given features to tell apart the voters and non-voters.
+
+```{r check xgboos accuracy}
+getAccXGboost(xgb, voteData, "vote") 
+```
+
+### 2.2 Estimate feature importance
+
+We next use the built xgboost model to estimate the relative importance of each feature in differentiating the voters from the non-voters. More specifically, we look at four metrics: three extracted direclty from the xgboost tree ensemble (gain, cover, frequency) and one additional calculated measure (shapley value). Briefly, the meaning of the four metrics are:
+
+-   Gain: improvement in accuracy brought by the feature to the branches it is on
+-   Cover: relative quantity of observations concerned by a feature
+-   Frequency: the number of times a feature is used in all generated trees
+-   SHAP value (average): the average contribution of the feature to the prediction of the model
+
+Detailed explanation of these measures, particularly Shapley values, is out of the scope here, but there are many sources online that provide great explanations and are easily searchable.
+
+```{r estimate feature imp}
+fMetricModel <- getFeatureImp(xgb, voteData, "vote")
+head(fMetricModel)
+```
+
+### 2.3 Extract Cutoffs
+
+Since xgboost treen ensemble are a collection of individual tree structures, we can extract and summarize the cutoffs used across them and leverage on these cutoffs to calibrate our data. The default behavior is to look at each feature's cutoff across all trees and choose the most frequently used one. Admittedly, these might not be the most appropriate cutoffs depending on the contexts, and we showed that these cutoffs, among all possible cutoffs, would produce QCA solutions that are among top 10%. Still, we enourage the users to take these for guidance and leverage on prior/domain knowledge to evaluate the their relavance and appropriateness, and modify them accordingly.
+
+Another potential catch of this approach is "missing features". When constructing model, there is certain built-in randomness (in selecting features for each tree), and consequently some features (usually the less informative ones) may not be used. This is normally okay, as the "missing feautres" are very likely to be uninformative and thus least useful for downstream QCA analysis. However, if certain features are still desired, we can manually add them into the cutoff table and set a cutoff for them. Alternatively, we can also set a different seed and retrain the xgboost model to see if the features will be selected.
+
+```{r extract cutoffs}
+cutDf <- getXGboostCut(xgb, full = F)
+head(cutDf)
+nrow(cutDf) # 72 of the 76 features selected; 4 "missing" features
+```
+
+### 2.4 Calibrate data
+
+When building the xgboost model, we do not require nor enourage the input data to be calibrated. This ensures maximal details/information that can be instrumental for classification. However, to proceed with downstream QCA tasks, we have to calibrate the data. Since we extracted the cutoffs above, we can use them directly to calibrate. Note that the current version only support crisp calibration, and fuzzy set calibration will be supported in future versions.
+
+```{r recalibrate}
+## before calibration
+unique(voteData$V188)
+## calibrate
+voteDataCalibrated <- reCalibrateXGCut(data = voteData, cutoffs = cutDf, outcome = "vote", na.rm = F)
+## after calibration
+unique(voteDataCalibrated$V188)
+```
+
+### 2.5 Estimate QCA metrics
+
+Now that we have the (re)calibrated data, we can perform a per-feature QCA test to get an idea of some basic QCA metrics of each feature.
+
+```{r necessity}
+fMetricQCA <- getQCAMetric(voteDataCalibrated, "vote")
+head(fMetricQCA)
+```
+
+### 2.6 Form feature-ranking table
+
+We have constructed per-feature metrics from both the xgboost model and per-feature QCA, and we can combine them to get a single feature importance table and save for later reference. Note that the final ranking `fRank` is still based on the "shap" value, which best captures the learning from the xgboost model.
+
+```{r combine feature tables}
+fRankTable <- joinMetrics(fMetricModel, fMetricQCA)
+head(fRankTable)
+```
+
+### 2.7 Iterative QCA
+
+The feature ranking table is great for reference, and we have shown that the top features on average provide much better QCA solutions than the bottom ones. However, even among the top 10, we normally want to choose 3 to 4 features to analyze using QCA. This presents a problem as we do not know which 3 or 4 out of 10 features might give us the best solution. To address this, we perform iterative QCA sufficiency tests and summarize the results.
+
+Specifically, as an example, let's choose the top 10 features from the feature ranking table as our "pool" of features. We then iteratively choose 4 out of the 10 features to do QCA analysis, exhaustively examining all combinations of "10-choose-4". The resulting solutions include the particular combination of 4 features, the corresponding solution and the metric scores for that solution. In addition, the results are also ranked based on the coverage as a guidance. Users are then encouraged to examine this table to determine the best features to use. Note that the features to choose from are manually determined by the users, and they need not to be the top features form the ranking table.
+
+```{r iterative QCA}
+selectFeatures <- head(fMetricModel$feature, 10)
+## this can take a few minutes
+Res <- iterQCA(features = selectFeatures, k=4, dataCali = voteDataCalibrated, outcome = "vote", incl.cut = 0.8)
+head(Res)
+```

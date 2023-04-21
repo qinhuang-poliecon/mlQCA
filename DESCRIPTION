@@ -1,0 +1,34 @@
+Package: mlQCA
+Type: Package
+Title: Machine-learning-enhanced QCA
+Version: 0.1.0
+Author: Qin Huang
+Maintainer: Qin Huang <qinhuang2024@u.northwestern.edu>
+Description: Deploying machine learning in feature-selection and calibration for downstream QCA analysis
+    Current version uses xgboost as the main model for machine learning.
+License: MIT + file LICENSE
+Encoding: UTF-8
+LazyData: true
+URL: https://github.com/DanielGuoshuaiCao/mlQCA
+BugReports: https://github.com/DanielGuoshuaiCao/mlQCA/issues
+RoxygenNote: 7.2.3
+Suggests: 
+    knitr,
+    rmarkdown,
+    testthat (>= 3.0.0)
+Config/testthat/edition: 3
+Imports: 
+    caret,
+    dplyr,
+    purrr,
+    QCA,
+    SetMethods,
+    SHAPforxgboost,
+    stats,
+    stringr,
+    tidyr,
+    utils,
+    xgboost
+Depends: 
+    R (>= 2.10)
+VignetteBuilder: knitr

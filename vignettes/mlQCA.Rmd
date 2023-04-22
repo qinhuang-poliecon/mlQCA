@@ -23,12 +23,12 @@ library(mlQCA)
 
 The overall workflow of the package is intentionally straight-forward (we assume you have pre-processed your data but have not calibrated it yet):\
 1. **Build an xgboost model** (classification based on your outcome label)\
-2. **Estimate feature importance** (based on the xgboost model)\
+2. **Estimate feature importance** (based on the xgboost model and SHAP analysis)\
 3. **Extract cutoffs** (used by the xgboost model)\
-4. **Calibrate data** (with the cutoffs)\
-5. **Estimate QCA metrics** (using the calibrated data)\
-6. **Form feature-ranking table** (by tallying feature importance and necessity metrics)\
-7. **Iterative QCA** (by choosing k features from a given n feature vector)
+4. **Calibrate data** (with the cutoffs generated in Step 2)\
+5. **Necessity analysis for individual conditions** (using the calibrated data)\
+6. **Form condition-ranking table** (by tallying feature importance and necessity metrics)\
+7. **Iterative QCA for sufficiency analysis** (by choosing k explanatory conditions from a given n condition vector)
 
 ```{r basic workflow, eval=F}
 ## 1. Build an xgboost model
@@ -43,13 +43,13 @@ cutDf <- getXGboostCut(xgb, full = F)
 ## 4. Calibrate data
 voteDataCalibrated <- reCalibrateXGCut(data = voteData, cutoffs = cutDf, outcome = "vote", na.rm = F)
 
-## 5. Estimate QCA metrics
+## 5. Necessity analysis for individual conditions
 fMetricQCA <- getQCAMetric(voteDataCalibrated, "vote")
 
-## 6. Form feature-ranking table
+## 6. Form condition-ranking table
 fRankTable <- joinMetrics(fMetricModel, fMetricQCA)
 
-## 7. Iterative QCA
+## 7. Iterative QCA for sufficiency analysis
 selectFeatures <- head(fMetricModel$feature, 10)
 Res <- iterQCA(features = selectFeatures, k=4, dataCali = voteDataCalibrated, outcome = "vote", incl.cut = 0.8)
 ```
@@ -60,7 +60,7 @@ Res <- iterQCA(features = selectFeatures, k=4, dataCali = voteDataCalibrated, ou
 
 We assume you have pre-processed your data (including data cleaning, renaming, filtering etc.), and we start by building an xgboost model. Specifically, we build a tree ensemble classification model to classify each observation into one of your outcome category.
 
-In our example data `voteData`, our outcome label is `"vote"`, indicating whether the interviewee voted or not. Each row is a interviewee, and the features are various aspects about the interviewee (e.g. education level, parent education level, etc.). Refer to the `codebook` for the feature names.
+In our example data `voteData`, our outcome condition is `"vote"`, indicating whether the interviewee voted or not. Each row is a interviewee, and the features are various aspects about the interviewee (e.g. education level, parent education level, etc.). Refer to the `codebook` for the feature names.
 
 ```{r outcome count}
 dim(voteData) # 427 interviewees; 77 features, including "vote"
@@ -77,7 +77,7 @@ xgb <- buildXGboost(voteData, "vote")
 
 We can estimate the accuracy of the model to get an idea of how well it differentiates the voters and the non-voters.Note that our goal here is not to predict new data, but rather to understand the data at hand. The accuracy, even modest as a general classification model, may be good enough to show some success in using the given features to tell apart the voters and non-voters.
 
-```{r check xgboos accuracy}
+```{r check xgboost accuracy}
 getAccXGboost(xgb, voteData, "vote") 
 ```
 
@@ -122,18 +122,18 @@ voteDataCalibrated <- reCalibrateXGCut(data = voteData, cutoffs = cutDf, outcome
 unique(voteDataCalibrated$V188)
 ```
 
-### 2.5 Estimate QCA metrics
+### 2.5 Necessity analysis for individual conditions
 
-Now that we have the (re)calibrated data, we can perform a per-feature QCA test to get an idea of some basic QCA metrics of each feature.
+Now that we have the (re)calibrated data, we can perform a QCA necessity test to get an idea of the necessity relationship between each explanatory condition and the outcome.
 
 ```{r necessity}
 fMetricQCA <- getQCAMetric(voteDataCalibrated, "vote")
 head(fMetricQCA)
 ```
 
-### 2.6 Form feature-ranking table
+### 2.6 Form condition-ranking table
 
-We have constructed per-feature metrics from both the xgboost model and per-feature QCA, and we can combine them to get a single feature importance table and save for later reference. Note that the final ranking `fRank` is still based on the "shap" value, which best captures the learning from the xgboost model.
+We have constructed per-feature metrics from both the xgboost model and QCA necessity tests, and we can combine them to get a single feature importance table and save for later reference. Note that the final ranking `fRank` is still based on the "shap" value, which best captures the learning from the xgboost model.
 
 ```{r combine feature tables}
 fRankTable <- joinMetrics(fMetricModel, fMetricQCA)
@@ -142,7 +142,7 @@ head(fRankTable)
 
 ### 2.7 Iterative QCA
 
-The feature ranking table is great for reference, and we have shown that the top features on average provide much better QCA solutions than the bottom ones. However, even among the top 10, we normally want to choose 3 to 4 features to analyze using QCA. This presents a problem as we do not know which 3 or 4 out of 10 features might give us the best solution. To address this, we perform iterative QCA sufficiency tests and summarize the results.
+The condition ranking is great for reference, and we have shown that the top features on average provide much better QCA solutions than the bottom ones. However, even among the top 10, we normally want to choose 3 to 4 features to analyze using QCA. This presents a problem as we do not know which 3 or 4 out of 10 features might give us the best solution. To address this, we perform iterative QCA sufficiency tests and summarize the results.
 
 Specifically, as an example, let's choose the top 10 features from the feature ranking table as our "pool" of features. We then iteratively choose 4 out of the 10 features to do QCA analysis, exhaustively examining all combinations of "10-choose-4". The resulting solutions include the particular combination of 4 features, the corresponding solution and the metric scores for that solution. In addition, the results are also ranked based on the coverage as a guidance. Users are then encouraged to examine this table to determine the best features to use. Note that the features to choose from are manually determined by the users, and they need not to be the top features form the ranking table.
 

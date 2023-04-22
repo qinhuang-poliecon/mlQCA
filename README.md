@@ -6,11 +6,11 @@
 
 # mlQCA: Machine Learning Enhanced Qualitative Comparative Analysis (QCA)
 
-mlQCA is an R package designed to empower researchers with the capabilities of machine learning (ML) for conducting qualitative comparative analysis (QCA) more effectively. This package specifically addresses the limitations of QCA for large datasets by incorporating ML-based feature selection and calibration techniques.
+mlQCA is an R package designed to empower researchers with the capabilities of machine learning (ML) for conducting qualitative comparative analysis (QCA) more effectively. This package specifically addresses the limitations of QCA for large datasets by incorporating ML-enhanced condition selection and calibration.
 
-At its core, mlQCA utilizes the extreme gradient boosting (XGBoost) tree ensemble algorithm for classification based on the outcome variable, ensuring optimal performance and feature cutoffs for tabular data. Furthermore, the package provides the ability to iteratively evaluate QCA across a range of variables, allowing for more in-depth analysis.
+At its core, mlQCA utilizes the extreme gradient boosting (XGBoost) tree ensemble algorithm for classification based on the outcome, assisting practitioners in finding explanatory conditions and calibration cut-offs that optimize the coverage of QCA solutions. Furthermore, the package provides the ability to iteratively evaluate QCA across a range of conditions, allowing for more in-depth analysis.
 
-The primary goal of the mlQCA package is to make advanced machine learning accessible to the wider research community, enabling them to harness its power for more efficient and accurate QCA. By offering a user-friendly and professional solution, researchers can save valuable time and resources while gaining valuable insights from their data.
+
 
 ### Package Installation
 
@@ -46,10 +46,6 @@ Note that installation may take an extra 5-10 minutes for building of the vignet
 ``` r
 vignette("celda")
 ```
-
-Extended tutorial are also available at:
-
--   [Get Started: Reproduce Main Results in Article](https://carmonalab.github.io/docs/)
 
 ### Get help
 

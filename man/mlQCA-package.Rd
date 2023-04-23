@@ -11,8 +11,9 @@ Deploying machine learning in feature-selection and calibration for downstream Q
 \seealso{
 Useful links:
 \itemize{
-  \item \url{https://github.com/DanielGuoshuaiCao/mlQCA}
-  \item Report bugs at \url{https://github.com/DanielGuoshuaiCao/mlQCA/issues}
+  \item \url{https://github.com/qinhuang-poliecon/mlQCA}
+  \item \url{https://qinhuang-poliecon.github.io/mlQCA/}
+  \item Report bugs at \url{https://github.com/qinhuang-poliecon/mlQCA/issues}
 }
 
 }

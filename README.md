@@ -1,4 +1,4 @@
-# mlQCA:Machine Learning Enhanced Qualitative Comparative Analysis (QCA) <img src="man/figures/mlQCA_logo.png" align="right" width="180"/>
+# mlQCA:Machine Learning Enhanced Qualitative Comparative Analysis (QCA) <img src="man/figures/mlQCA_logo.png" align="right" width="150"/>
 
 
 

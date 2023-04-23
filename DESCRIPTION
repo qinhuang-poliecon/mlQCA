@@ -9,9 +9,9 @@ Description: Deploying machine learning in feature-selection and calibration for
 License: MIT + file LICENSE
 Encoding: UTF-8
 LazyData: true
-URL: https://github.com/DanielGuoshuaiCao/mlQCA,
+URL: https://github.com/qinhuang-poliecon/mlQCA,
     https://qinhuang-poliecon.github.io/mlQCA/
-BugReports: https://github.com/DanielGuoshuaiCao/mlQCA/issues
+BugReports: https://github.com/qinhuang-poliecon/mlQCA/issues
 RoxygenNote: 7.2.3
 Suggests: 
     knitr,

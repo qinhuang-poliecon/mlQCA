@@ -1,6 +1,6 @@
-# mlQCA <img src="man/figures/mlQCA_logo.png" align="right" width="120"/>
+# mlQCA:Machine Learning Enhanced Qualitative Comparative Analysis (QCA) <img src="man/figures/mlQCA_logo.png" align="right" width="120"/>
 
-### Machine Learning Enhanced Qualitative Comparative Analysis (QCA)
+
 
 mlQCA is an R package designed to empower researchers with the capabilities of machine learning (ML) for conducting qualitative comparative analysis (QCA) more effectively. This package specifically addresses the limitations of QCA for large datasets by incorporating ML-enhanced condition selection and calibration.
 

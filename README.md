@@ -47,6 +47,8 @@ Note that installation may take an extra 5-10 minutes for building of the vignet
 vignette("celda")
 ```
 
+Detailed documentation and workflow tutorial can be found at [mlQCA package site](https://qinhuang-poliecon.github.io/mlQCA/). 
+
 ### Get help
 
 Please address your questions and bug reports at: [mlQCA issues](https://github.com/qinhuang_poliecon/mlQCA/issues).

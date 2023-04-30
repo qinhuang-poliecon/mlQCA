@@ -11,7 +11,7 @@ At its core, mlQCA utilizes the extreme gradient boosting (XGBoost) tree ensembl
 The package is currently hosted on github and users can install directly from github:
 
 ``` r
-devtools::install_github("qinhuang_poliecon/mlQCA")
+devtools::install_github("qinhuang-poliecon/mlQCA")
 ```
 
 ### Test the package

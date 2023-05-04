@@ -8,9 +8,12 @@ At its core, mlQCA utilizes the extreme gradient boosting (XGBoost) tree ensembl
 
 ### Package Installation (For Reviewers)
 
-Please download this repository, and open the `mlQCA.Rproj` file. Then run:
+Please download the `mlQCA_Project_Folder.zip` file and unzip it. Then in the folder open the `mlQCA.Rproj` file. 
+
+Next run:
 
 ```r
+install.packages("devtools")
 devtools::install()
 ```
 

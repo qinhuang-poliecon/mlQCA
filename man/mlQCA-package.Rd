@@ -8,13 +8,4 @@
 \description{
 Deploying machine learning in feature-selection and calibration for downstream QCA analysis Current version uses xgboost as the main model for machine learning.
 }
-\seealso{
-Useful links:
-\itemize{
-  \item \url{https://github.com/qinhuang-poliecon/mlQCA}
-  \item \url{https://qinhuang-poliecon.github.io/mlQCA/}
-  \item Report bugs at \url{https://github.com/qinhuang-poliecon/mlQCA/issues}
-}
-
-}
 \keyword{internal}

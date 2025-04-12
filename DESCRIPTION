@@ -2,13 +2,16 @@ Package: mlQCA
 Type: Package
 Title: Machine-learning-enhanced QCA
 Version: 0.1.0
-Author: Anonymous
+Authors@R: 
+    person("Qin", "Huang", email = "qinhuang2024@u.northwestern.edu", 
+           role = c("aut", "cre"), 
+           comment = c(ORCID = "0000-0002-5632-8676"))
 Description: Deploying machine learning in feature-selection and calibration for downstream QCA analysis
     Current version uses xgboost as the main model for machine learning.
 License: MIT + file LICENSE
 Encoding: UTF-8
 LazyData: true
-URL: https://anonymous.4open.science/r/mlQCA-8DBF
+URL: https://anonymous.4open.science/r/mlQCA-8DBF, https://qinhuang-poliecon.github.io/mlQCA/
 RoxygenNote: 7.2.3
 Suggests: 
     knitr,

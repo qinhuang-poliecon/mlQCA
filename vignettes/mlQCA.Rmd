@@ -146,7 +146,7 @@ The condition ranking is great for reference, and we have shown that the top fea
 
 Specifically, as an example, let's choose the top 10 features from the feature ranking table as our "pool" of features. We then iteratively choose 4 out of the 10 features to do QCA analysis, exhaustively examining all combinations of "10-choose-4". The resulting solutions include the particular combination of 4 features, the corresponding solution and the metric scores for that solution. In addition, the results are also ranked based on the coverage as a guidance. Users are then encouraged to examine this table to determine the best features to use. Note that the features to choose from are manually determined by the users, and they need not to be the top features form the ranking table.
 
-```{r iterative QCA}
+```{r iterative QCA,  message=FALSE, warning=FALSE}
 selectFeatures <- head(fMetricModel$feature, 10)
 ## this can take a few minutes
 Res <- iterQCA(features = selectFeatures, k=4, dataCali = voteDataCalibrated, outcome = "vote", incl.cut = 0.8)

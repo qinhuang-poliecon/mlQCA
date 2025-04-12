@@ -3,7 +3,7 @@ pkgdown: 2.1.1
 pkgdown_sha: ~
 articles:
   mlQCA: mlQCA.html
-last_built: 2025-04-12T12:40Z
+last_built: 2025-04-12T12:56Z
 urls:
   reference: https://qinhuang-poliecon.github.io/mlQCA/reference
   article: https://qinhuang-poliecon.github.io/mlQCA/articles

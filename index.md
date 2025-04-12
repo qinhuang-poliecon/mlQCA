@@ -15,4 +15,4 @@ install.packages("devtools")
 devtools::install_github("qinhuang-poliecon/mlQCA")
 ```
 
-To see how an mlQCA project can be executed, please follow the workflow provided in the `vignettes/mlQCA.html` file.
+To see how an mlQCA project can be executed, please refer to the [get started tutorial](https://qinhuang-poliecon.github.io/mlQCA/articles/mlQCA.html).

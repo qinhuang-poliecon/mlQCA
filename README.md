@@ -6,7 +6,7 @@ mlQCA is an R package designed to empower researchers with the capabilities of m
 
 At its core, mlQCA utilizes the extreme gradient boosting (XGBoost) tree ensemble algorithm for classification based on the outcome, assisting practitioners in finding explanatory conditions and calibration cut-offs that optimize the coverage of QCA solutions. Furthermore, the package provides the ability to iteratively develop QCA models across a range of conditions, allowing for more inductive and explorative analysis.
 
-### Package Installation (For Reviewers)
+### Package Installation 
 
 Please download the `mlQCA_Project_Folder.zip` file and unzip it. Then, open the `mlQCA.Rproj` file in the folder.
 
@@ -14,7 +14,7 @@ Next run:
 
 ``` r
 install.packages("devtools")
-devtools::install()
+devtools::install_github("qinhuang-poliecon/mlQCA")
 ```
 
 To see how an mlQCA project can be executed, please follow the workflow provided in the `vignettes/mlQCA.html` file.

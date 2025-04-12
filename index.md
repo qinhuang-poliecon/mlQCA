@@ -16,3 +16,18 @@ devtools::install_github("qinhuang-poliecon/mlQCA")
 ```
 
 To see how an mlQCA project can be executed, please refer to the [get started tutorial](https://qinhuang-poliecon.github.io/mlQCA/articles/mlQCA.html).
+
+### Citation
+
+Please cite the paper if you are using this package:
+
+Huang, Qin. Forthcoming. "Towards Machine-Learning Enhanced QCA: Optimizing Coverage and Empirical Significance." Quality & Quantity.
+
+``` r
+@article{huang2025mlqca,
+  author  = {Qin Huang},
+  title   = {Towards machine-learning enhanced QCA: Optimizing coverage and empirical significance},
+  journal = {Quality & Quantity},
+  year    = {Forthcoming}
+}
+```
